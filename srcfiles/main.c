@@ -6,7 +6,9 @@
 
 /* Vreme proteklo od pocetka simulacije. */
 static float animation_parameter;
-
+static float x_parameter;
+static float y_parameter;
+static float z_parameter;
 /* Fleg koji odredjuje stanje tajmera. */
 static int animation_active;
 
@@ -17,6 +19,7 @@ static void on_timer(int value);
 void on_display(void);
 void draw_convex_hull();
 
+float iwidth=300, iheight=300;
 
 Node *points, *plains;
 
@@ -27,7 +30,7 @@ int main(int argc, char **argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
     /* Kreira se prozor. */
-    glutInitWindowSize(300, 300);
+    glutInitWindowSize(iwidth, iheight);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
 
@@ -37,15 +40,19 @@ int main(int argc, char **argv)
 	   glutDisplayFunc(on_display);
 // 
 //     /* Inicijalizuju se globalne promenljive. */
-//     animation_parameter = 0;
-//     animation_active = 0;
+    animation_parameter = 0;
+    animation_active = 0;
+	x_parameter = 0;
+	y_parameter = 0;
+	z_parameter = 0;
+	
 
     /* Obavlja se OpenGL inicijalizacija. */
     glClearColor(0.75, 0.75, 0.75, 0.75);
     glEnable(GL_DEPTH_TEST);
 
    
-    int number_of_points = 6;
+    int number_of_points = 60;
    
     int i;
     for (i = 0; i < number_of_points; i++){
@@ -56,6 +63,7 @@ int main(int argc, char **argv)
 
     
 	plains = convex_hull(points);
+//	plains = initial_convex_hull(points);
    
 	print_list(plains, print_plain);
 	
@@ -68,8 +76,16 @@ void on_display()
 {
 	printf("on_display");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    draw_convex_hull();
+	
+	glPushMatrix();
+		glRotatef(x_parameter,1,0,0);
+		glRotatef(y_parameter,0,1,0);
+		glRotatef(z_parameter,0,0,1);
+		glTranslatef(0,0,0);
+		draw_convex_hull();
+	glPopMatrix();
+	
+	
     /* Postavlja se nova slika u prozor. */
     glutSwapBuffers();
 }
@@ -82,50 +98,77 @@ static void on_keyboard(unsigned char key, int x, int y)
         exit(0);
         break;
 
-//     case 'g':
-//     case 'G':
-//         /* Pokrece se simulacija. */
-//         if (!animation_active) {
-//             glutTimerFunc(10, on_timer, 0);
-//             animation_active = 1;
-//         }
-//         break;
-
-    case 's':
-    case 'S':
-        /* Zaustavlja se simulacija. */
-        animation_active = 0;
+    case 'g':
+    case 'G':
+        /* Pokrece se simulacija. */
+        if (!animation_active) {
+            glutTimerFunc(10, on_timer, 0);
+            animation_active = 1;
+        }
         break;
-    }
+
+    //case 's':
+    //case 'S':
+        /* Zaustavlja se simulacija. */
+        //animation_active = 0;
+        //break;
+	case 'a':
+	case 'A':
+		x_parameter -= 1;
+		break;
+	case 'd':
+	case 'D':
+		x_parameter += 1;
+		break;
+	case 'w':
+	case 'W':
+		z_parameter -= 1;
+		break;
+	case 's':
+	case 'S':
+		z_parameter += 1;
+		break;
+	case 'q':
+	case 'Q':
+		y_parameter += 1;
+		break;
+	case 'e':
+	case 'E':
+		y_parameter -= 1;
+		break;
+	}
 }
 
-// static void on_timer(int value)
-// {
-//     /* Proverava se da li callback dolazi od odgovarajuceg tajmera. */
-//     if (value != 0)
-//         return;
-// 
-//     /* Azurira se vreme simulacije. */
-//     animation_parameter++;
-// 
-//     /* Forsira se ponovno iscrtavanje prozora. */
-//     glutPostRedisplay();
-// 
-//     /* Po potrebi se ponovo postavlja tajmer. */
-//     if (animation_active)
-//         glutTimerFunc(10, on_timer, 0);
-// }
+static void on_timer(int value)
+{
+    /* Proverava se da li callback dolazi od odgovarajuceg tajmera. */
+    if (value != 0)
+        return;
 
-// static void on_reshape(int width, int height)
-// {
-//     /* Postavlja se viewport. */
-//     glViewport(0, 0, width, height);
-// 
-//     /* Postavljaju se parametri projekcije. */
-//     glMatrixMode(GL_PROJECTION);
-//     glLoadIdentity();
-//     gluPerspective(60, (float) width / height, 1, 1500);
-// }
+    /* Azurira se vreme simulacije. */
+    animation_parameter += 0.1;
+
+    /* Forsira se ponovno iscrtavanje prozora. */
+    glutPostRedisplay();
+
+    /* Po potrebi se ponovo postavlja tajmer. */
+    if (animation_active)
+        glutTimerFunc(10, on_timer, 0);
+}
+
+static void on_reshape(int width, int height)
+{
+	iwidth = width;
+	iheight = height;
+	
+    /* Postavlja se viewport. */
+    glViewport(0, 0, width, height);
+
+    /* Postavljaju se parametri projekcije. */
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60, (float) width / height, 0.000001,100);
+}
 void draw_convex_hull()
 {
  	printf("draw_convex_hull");
@@ -138,7 +181,7 @@ void draw_convex_hull()
     p = plains;
     int i = 0;
     for (; p != NULL; p = p->next, i++){
-        if (i >= animation_parameter)
+         if (i >= animation_parameter)
             break;
         draw_plain(*((Plain *)p->elem));
     }

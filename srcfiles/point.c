@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 
 #include "point.h"
+#include "vector.h"
 
 int callOnce = 0;
 
@@ -42,4 +43,14 @@ void draw_point(Point point)
 void print_point(Point *point)
 {
 	printf("(x=%lf, y=%lf, z=%lf)", point->x, point->y, point->z);
+}
+
+double point_to_line_distance(Point point, Point lineA, Point lineB)
+{
+	double p = vector_length(cross(sub_vector(lineB, lineA), sub_vector(lineA, point)));
+	double q = vector_length(sub_vector(lineB, lineA));
+	
+	double r = p/q;
+	
+	return r;
 }

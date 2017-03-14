@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "plain.h"
+#include "vector.h"
 
 /*Point *get_third_point(Plain *plain, Point *p, Point *q)
 {
@@ -29,8 +30,14 @@ Plain *get_neighboor(Plain *plain, Point *p, Point *q)
 
 void get_neighboors_points(Plain *plain, Plain *neighboor, Point **a, Point **b, Point **c)
 {
+	printf("\nGET POINTS ...\n");
+	print_point(get_points(neighboor));
+	printf("\nGET POINTS leaving ...\n");
+	
     Node *plain_points = append_list(get_points(plain), get_points(plain));
     Node *neighboor_points = append_list(get_points(neighboor), get_points(neighboor));
+	
+	
     /*sad treba za svake dve susedne tacke od plain da vidimo da li su one iste kao dve susedne tacke od nejbor*/
     /*dve susedne tack dobijamo sa point, point.next ako je point.next != null a ako je null onda prva
      znaci samo imamo petlju po plain_points i u njoj petlju po neighboor_points ajdeeeeeeeeeeee*/
@@ -52,6 +59,7 @@ void get_neighboors_points(Plain *plain, Plain *neighboor, Point **a, Point **b,
 // dodaje sve susede trouglu plain iz liste list
 void add_neighboors(Plain *plain, Node *list)
 {
+	printf("add_neighboors entering..\n");
     for (Node *temp = list; temp != NULL; temp = temp->next) {
         Plain * temp_plain = (Plain *)temp->elem;
 
@@ -77,6 +85,7 @@ void add_neighboors(Plain *plain, Node *list)
                 plain->cb = temp_plain;*/
         }
     }
+        printf("add_neighboors leaving..\n");
 }
 
 void arrange_points(Node *plains, Node *points)
@@ -105,7 +114,7 @@ Node * initial_convex_hull(Node *points)
     double maxx = point->x, maxy = point->y, maxz = point->z;
     Point *pminx = point, *pminy = point, *pminz = point;
     Point *pmaxx = point, *pmaxy = point, *pmaxz = point;
-    
+	
     for (Node *temp = points; temp != NULL; temp = temp->next) {
         point = (Point *)temp->elem;
         if (point->x > maxx) {	
@@ -115,7 +124,7 @@ Node * initial_convex_hull(Node *points)
         if (point->x < minx) {
             minx = point->x;
             pminx = point;
-        }
+		}
         if (point->y > maxy) {
             maxy = point->y;
             pmaxy = point;
@@ -134,17 +143,56 @@ Node * initial_convex_hull(Node *points)
         }
     }
     
-  
-   
-    Point *xypoints [] = {pminx,pmaxy,pmaxx,pminy};
-    
-    Node * list = NULL;
-    int i;
-    for (i = 0; i < 4; i++){
-        Plain *plain = make_plain(pmaxz,xypoints[i],xypoints[(i+1)%4]);
-        list = add_node(list,plain);
-
-        plain = make_plain(pminz,xypoints[i],xypoints[(i+3)%4]);
+	Point *xyzpoints [] = {pminx,pmaxx,pminz,pmaxz,pminy,pmaxy};
+	
+	double max_dist = 0;
+	Point *a,*b, *c;
+	
+	int i,j;
+	for (i = 0; i < 6; i++) {
+		for(j = 0; j < 6; j++) {
+			if(i==j) continue;
+			
+			double dist = vector_length(sub_vector(*xyzpoints[i], *xyzpoints[j]));
+			
+			if(dist > max_dist) {
+				max_dist = dist;
+				a = xyzpoints[i];
+				b = xyzpoints[j];
+			}
+		}
+	}
+	
+	max_dist = 0;
+	for (Node *temp = points; temp != NULL; temp = temp->next) {
+		Point *point = temp->elem;
+		
+		double dist = point_to_line_distance(*point, *a, *b);
+		
+		if(abs(dist) > max_dist) {
+			max_dist = abs(dist);
+			
+			c = point;
+		}
+	}
+	
+	print_point(a);print_point(b); print_point(c);printf("abc \n");
+	
+	Node * list = NULL;
+	
+	Plain *plain = make_plain(a,b,c);
+	plain->points = points;
+	
+	print_plain(plain); printf("plains \n");
+	
+	Point *top = find_farthest_point(*plain);
+	
+	plain = make_plain(c,b,a);
+	list = add_node(list,plain);
+	
+	Point *abc [] = {a,b,c};
+    for (i = 0; i < 3; i++){
+        Plain *plain = make_plain(top,abc[i],abc[(i+1)%3]);
         list = add_node(list,plain);
     }
    
@@ -152,9 +200,6 @@ Node * initial_convex_hull(Node *points)
         Plain * temp_plain = (Plain *)temp->elem;
         add_neighboors(temp_plain,list);
     }
-    
-    
-
     
     arrange_points(list,points);
 

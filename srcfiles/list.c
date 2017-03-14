@@ -20,6 +20,9 @@ Node * add_node(Node *list, void * elem)
         exit(EXIT_FAILURE);
     }
     // popunjavanje novog noda
+    // MALO SAM HAKERISALA SADA
+    if (elem == NULL)
+		return list;
     new_node->elem = elem;
     new_node->next = NULL;
    
@@ -75,6 +78,7 @@ Node * append_list(Node *initial, Node *append){
 
 void print_list(Node *list, void (*print_elem)(void*))
 {
+
 	printf("[");
 	for (Node *temp = list; temp != NULL; temp = temp->next) {
 		print_elem(temp->elem);

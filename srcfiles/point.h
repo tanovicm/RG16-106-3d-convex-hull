@@ -24,6 +24,9 @@ typedef struct {
  * 
  * @return Random point
  */
+
+double random_number();
+
 Point* random_point();
 
 /**
@@ -35,5 +38,7 @@ Point* random_point();
 void draw_point(Point point);
 
 void print_point(Point *point);
+
+double point_to_line_distance(Point point, Point lineA, Point lineB);
 
 #endif // __POINT_H_ 

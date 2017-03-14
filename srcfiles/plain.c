@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "plain.h"
+#include "point.h"
 #include "vector.h"
 
 #ifndef M_PI
@@ -69,18 +70,21 @@ Plain * make_plain(Point *a, Point *b, Point *c)
 
 Node *get_points(Plain *plain)
 {
+	
+	
     /*NAPISI VRATI listu Tacaka [a,b,c]*/
     Node *points = NULL;
     points = add_node(points,plain->a);
     points = add_node(points,plain->b);
     points = add_node(points,plain->c);
-    
-    return points;
+  
+	if(points != NULL)
+		return points;
 }
 Point* find_farthest_point(Plain plain)
 {
-    int max = 0;
-    Point *pmax;
+    double max = 0;
+    Point *pmax = NULL;
 
     for (Node *temp = plain.points; temp != NULL; temp = temp->next) {
         Point *point = (Point *)temp->elem;
@@ -98,7 +102,8 @@ Point* find_farthest_point(Plain plain)
 void draw_plain(Plain plain)
 {
     glBegin(GL_TRIANGLES);
-        glVertex3d(plain.a->x, plain.a->y, plain.a->z);
+		glColor3d(plain.a->x, plain.b->y, plain.c->z);
+		glVertex3d(plain.a->x, plain.a->y, plain.a->z);
         glVertex3d(plain.b->x, plain.b->y, plain.b->z);
         glVertex3d(plain.c->x, plain.c->y, plain.c->z);
     glEnd();
