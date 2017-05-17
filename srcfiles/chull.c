@@ -16,7 +16,7 @@
 
 }*/
 
-Plain *get_neighboor(Plain *plain, Point *p, Point *q)
+Plain *get_neighbor(Plain *plain, Point *p, Point *q)
 {
     if (plain->b == p && plain->a == q)
         return plain->ba;
@@ -26,24 +26,22 @@ Plain *get_neighboor(Plain *plain, Point *p, Point *q)
         return plain->cb;
 }
 
-
-
-void get_neighboors_points(Plain *plain, Plain *neighboor, Point **a, Point **b, Point **c)
+void get_neighbors_points(Plain *plain, Plain *neighbor, Point **a, Point **b, Point **c)
 {
-	printf("\nGET POINTS ...\n");
-	print_point(get_points(neighboor));
-	printf("\nGET POINTS leaving ...\n");
-	
-    Node *plain_points = append_list(get_points(plain), get_points(plain));
-    Node *neighboor_points = append_list(get_points(neighboor), get_points(neighboor));
-	
-	
-    /*sad treba za svake dve susedne tacke od plain da vidimo da li su one iste kao dve susedne tacke od nejbor*/
-    /*dve susedne tack dobijamo sa point, point.next ako je point.next != null a ako je null onda prva
-     znaci samo imamo petlju po plain_points i u njoj petlju po neighboor_points ajdeeeeeeeeeeee*/
 
+    Node *plain_points = append_list(get_points(plain), get_points(plain));
+    Node *neighbor_points = append_list(get_points(neighbor), get_points(neighbor));
+	
+	/* for each two adjacent points of plain 
+	 * checking whether they are the same as two adjacent points of neighbor
+	 * 
+	 * point and point.next gives two adjacent points
+	 * if next is null then just first point is observed
+	 * 
+	 * loop by plain_points, inside loop by neighbor points 
+	 */
     for (Node *p = plain_points; p->next != NULL; p = p->next) {
-		for(Node *n = neighboor_points; n->next->next != NULL; n = n->next) {
+		for(Node *n = neighbor_points; n->next->next != NULL; n = n->next) {
             if (p->elem == n->next->elem && p->next->elem == n->elem){
                 *a = n->elem;
                 *b = n->next->elem;
@@ -54,21 +52,18 @@ void get_neighboors_points(Plain *plain, Plain *neighboor, Point **a, Point **b,
     }
 }
 
-
-
-// dodaje sve susede trouglu plain iz liste list
-void add_neighboors(Plain *plain, Node *list)
+void add_neighbors(Plain *plain, Node *list)
 {
-	printf("add_neighboors entering..\n");
     for (Node *temp = list; temp != NULL; temp = temp->next) {
         Plain * temp_plain = (Plain *)temp->elem;
 
         if (temp_plain == plain) continue;
         
-        Node *neighboor_points = append_list(get_points(temp_plain), get_points(temp_plain));
+        Node *neighbor_points = append_list(get_points(temp_plain), get_points(temp_plain));
        
-        for(Node *n = neighboor_points; n->next != NULL; n = n->next){
-            Point *q = n->elem, *p = n->next->elem;
+        for(Node *n = neighbor_points; n->next != NULL; n = n->next) {
+
+			Point *q = n->elem, *p = n->next->elem;
 
             if (q == plain->b && p == plain->a)
                 plain->ba = temp_plain;
@@ -85,29 +80,25 @@ void add_neighboors(Plain *plain, Node *list)
                 plain->cb = temp_plain;*/
         }
     }
-        printf("add_neighboors leaving..\n");
 }
 
 void arrange_points(Node *plains, Node *points)
 {
     for (Node *temp = points; temp != NULL; temp = temp->next) {
         Point *point = (Point *)temp->elem;
-	print_point(point);
-	printf("\n");
-        for (Node *temp = plains; temp != NULL; temp = temp->next) {
+
+	for (Node *temp = plains; temp != NULL; temp = temp->next) {
             Plain *plain = (Plain *)temp->elem;
-            
-	    printf("%lf\n", distance(*plain, *point));
-	    
-            if (distance(*plain, *point) > 0.0001){
+
+			if (distance(*plain, *point) > 0.0001) { // <- since they are doubles
                 plain->points = add_node(plain->points,point);
-		break;
+				break;
             }
         }
     }
 }
 
-Node * initial_convex_hull(Node *points)
+Node* initial_convex_hull(Node *points)
 {
     Point *point = (Point *)points->elem;
     double minx = point->x, miny = point->y, minz = point->z;
@@ -176,14 +167,10 @@ Node * initial_convex_hull(Node *points)
 		}
 	}
 	
-	print_point(a);print_point(b); print_point(c);printf("abc \n");
-	
 	Node * list = NULL;
 	
 	Plain *plain = make_plain(a,b,c);
 	plain->points = points;
-	
-	print_plain(plain); printf("plains \n");
 	
 	Point *top = find_farthest_point(*plain);
 	
@@ -198,7 +185,7 @@ Node * initial_convex_hull(Node *points)
    
     for (Node *temp = list; temp != NULL; temp = temp->next) {
         Plain * temp_plain = (Plain *)temp->elem;
-        add_neighboors(temp_plain,list);
+        add_neighbors(temp_plain,list);
     }
     
     arrange_points(list,points);
@@ -208,87 +195,66 @@ Node * initial_convex_hull(Node *points)
 
 Node *convex_hull(Node *points)
 {
-	
-    // Inicijalni konveksni omotac
-    Node *plains = initial_convex_hull(points);
-    
-	print_list(plains, print_plain);
-	
-    for (Node *temp = plains; temp != NULL; temp = temp->next) {
-        Plain *plain = (Plain *)temp->elem;
-		printf("\nofje1\n");
-        // Da li postoje tacke iznad ove strane, ako nepostoje nemamo sta da radimo sa njom
-        if (plain->points == NULL) continue;
-		// najdalja tacka od strane sigurno pripada konveksnom omotacu
-        Point *point = find_farthest_point(*plain);
-        // stavi tacke u skup nerasporedjenih tackaka
-        Node *plain_points = plain->points;
-        
-        // ova strana sad vise nema tacaka
-        plain->points = NULL;
-       
-        // napravimo listu novih strana i njihovih suseda
-        Node *new_plains = NULL, *new_plains_neighboors = NULL;
-        for (Node *curr = get_neighboors(plain); curr != NULL; curr = curr->next){
-            Plain *neighboor = (Plain *)curr->elem;
 
-			// nadji tacke suseda
-			Point *na, *nb, *nc;
-			get_neighboors_points(plain, neighboor, &na, &nb, &nc);
+    Node *plains = initial_convex_hull(points);
+
+	for (Node *temp = plains; temp != NULL; temp = temp->next) {
+        Plain *plain = (Plain *)temp->elem;
+		
+//      does points above this plain exists
+// 		if not, it's not needed to be processed
+		
+		if (plain->points == NULL) continue;		
+//      the farthest point from plain surely belongs to convex hull
+		
+		Point *point = find_farthest_point(*plain);
+
+//      put points of a plain in set of unassigned points
+		Node *plain_points = plain->points;
+        plain->points = NULL; // <- so this plain has no points
+       
+//      now creates list of new plains and their neighbors
+        Node *new_plains = NULL, *new_plains_neighbors = NULL;
+        for (Node *curr = get_neighbors(plain); curr != NULL; curr = curr->next){
+            Plain *neighbor = (Plain *)curr->elem;
+			Point *na, *nb, *nc; // find points of a neighbor
+			get_neighbors_points(plain, neighbor, &na, &nb, &nc);
 			
-            if (distance(*neighboor,*point) > 0){
-                // stavi tacke u skup nerasporedjenih Tacaka
-                plain_points = append_list(plain_points, neighboor->points);
-               				
-                // napravi nove trouglove na_point_nc i point_nb_nc
+            if (distance(*neighbor,*point) > 0){
+
+				// put points in set of unarranged points
+				plain_points = append_list(plain_points, neighbor->points);
+
+				// create new plains na_point_nc and point_nb_nc
                 new_plains = add_node(new_plains, make_plain(na, point, nc));
                 new_plains = add_node(new_plains, make_plain(point, nb, nc));
                 
-                // dodaj susedove susede sa strana na_nc i nb_nc
-                new_plains_neighboors = add_node(new_plains_neighboors,get_neighboor(neighboor,na,nc));
-                new_plains_neighboors = add_node(new_plains_neighboors,get_neighboor(neighboor,nb,nc));
+                // add new neighbors neighbors from sides na_nc and nb_nc
+				new_plains_neighbors = 				add_node(new_plains_neighbors,get_neighbor(neighbor,na,nc));
+                new_plains_neighbors = add_node(new_plains_neighbors,get_neighbor(neighbor,nb,nc));
             } else {
-                //  napravi novi trougao a_b_point
-                new_plains = add_node(new_plains, make_plain(na, point, nb));
-                
-                // dodaj suseda sa strane a_b, gde, u new_plains_neighboors?
-                new_plains_neighboors = add_node(new_plains_neighboors, neighboor);
-                
-                // pazi sad foricu -  nemora da se pravi pomocna promenjiva i ta sranja
+                // create new plain a_b_point
+				new_plains = add_node(new_plains, make_plain(na, point, nb));
+               
+                // add neighbor	on the side of a_b 
+				new_plains_neighbors = add_node(new_plains_neighbors, neighbor);
             }
         }
-        
-        printf("\nofje2\n");
-        
-        // povezivanje suseda
+               
+        // linkage of neighbors
         for (Node *i = new_plains; i != NULL; i = i->next){
-            add_neighboors(i->elem, new_plains);
-            add_neighboors(i->elem, new_plains_neighboors);
+            add_neighbors(i->elem, new_plains);
+            add_neighbors(i->elem, new_plains_neighbors);
         }
-
-        printf("\nofje3\n");
         
-        for (Node *i = new_plains_neighboors; i != NULL; i = i->next){
+        for (Node *i = new_plains_neighbors; i != NULL; i = i->next){
 			Plain *plain = (Plain *)i->elem;
-			
-			printf("susedi pre %d %d %d\n", plain->ba, plain->ac, plain->cb);
-            add_neighboors(i->elem,new_plains);
-			printf("susedi pos %d %d %d\n", plain->ba, plain->ac, plain->cb);
+			add_neighbors(i->elem,new_plains);
         }
-
-        printf("\nofje4\n");
-        
-        // rasporedjivanje tacaka iz plain_points na new_plains
-
+        // arrange points from plain_points to new_plains
 		arrange_points(new_plains, plain_points);
-
-		 printf("\nofje4.5\n");
-		
-        // dodamo new_plains na kraj liste plains
+        // now add new_plains to the end of all plains in space
         plains = append_list(plains, new_plains);
-		
-		printf("\nofje5\n");
     }
-
     return plains;
 }

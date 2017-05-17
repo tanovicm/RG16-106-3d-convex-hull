@@ -32,7 +32,7 @@ typedef struct _plain {
 
 Plain * make_plain(Point *a, Point *b, Point *c);
 Node *get_points(Plain *plain);
-Node *get_neighboors(Plain *plain);
+Node *get_neighbors(Plain *plain);
 
 
 /**

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glut.h>
+#include <math.h>
 
 #include "chull.h"
 
@@ -16,15 +17,16 @@ static int window;
 static int menu_id;
 static int submenu_id;
 
-/* Vreme proteklo od pocetka simulacije. */
+/* Time passed from the begining of a simulation */
 static float animation_parameter;
 static float x_parameter;
 static float y_parameter;
 static float z_parameter;
-/* Fleg koji odredjuje stanje tajmera. */
+
+/* Flag determines timer state. */
 static int animation_active;
 
-/* Deklaracije callback funkcija. */
+/* Callback functions declarations */
 static void on_keyboard(unsigned char key, int x, int y);
 static void on_reshape(int width, int height);
 static void on_timer(int value);
@@ -50,85 +52,91 @@ float angleY = 0.0f;
 float xlx=0.0f, xlz=0.0f;
 float yly=0.0f, ylz=0.0f;
 
-
-
 // the key states. These variables will be zero
-//when no key is being presses
+// when no key is being presses
 float deltaAngleX = 0.0f;
 float deltaAngleY = 0.0f;
 int xOrigin = -1;
 int yOrigin = -1;
 
-
 // Menu handling function declaration
 void menu(int);
 
-
+void init(void) 
+{
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	/* Ambient lights. */
+	GLfloat light_ambient[] = { 0, 0, 0, 1 };
+	
+	/* Diffuse lights. */
+	GLfloat light_diffuse[] = { 1, 1, 1, 1 };
+	
+	/* Specular lights */
+	GLfloat light_specular[] = { 1, 1, 1, 1 };
+	
+	/* Ambient lighting of a scene */
+	GLfloat model_ambient[] = { 0.4, 0.4, 0.4, 1 };
+	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
+	
+	GLfloat ambient_coeffs[] = { .3, .3, .3, 1 };
+	GLfloat specular_coeffs[] = { .5, .5, .5, 1 };
+	GLfloat shininess = 100;
+	
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_coeffs);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular_coeffs);
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+	
+}
 
 int main(int argc, char **argv)
 {
-    /* Inicijalizuje se GLUT. */
+    /* GLUT init */
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
-    /* Kreira se prozor. */
+    /* Window created. */
     glutInitWindowSize(iwidth, iheight);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-// 	
-    /* Registruju se funkcije za obradu dogadjaja. */
+
+	init();
+    /* Events processing */
 	glutKeyboardFunc(on_keyboard);
 //        glutReshapeFunc(on_reshape);
 	glutDisplayFunc(on_display);
 	glutMouseFunc(mouseButton);
 	glutMotionFunc(mouseMove);
 
-	
-//     /* Inicijalizuju se globalne promenljive. */
- 
-	   
-    animation_parameter = 0;
+// 	  Global vars declaration 
+	animation_parameter = 0;
     animation_active = 0;
 	x_parameter = 0;
 	y_parameter = 0;
 	z_parameter = 0;
 	
 
-    /* Obavlja se OpenGL inicijalizacija. */
+    /* OpenGL init */
     glClearColor(0.64, 0.500, 0.87, 0.01);
     glEnable(GL_DEPTH_TEST);
-
-   
-//     int number_of_points = 60;
-//    
-//     int i;
-//     for (i = 0; i < number_of_points; i++){
-//         Point *point = random_point();
-//         points = add_node(points, point);
-// 
-//     }
-// 
-//     
-// 	plains = convex_hull(points);
-//	plains = initial_convex_hull(points);
-   
-// 	print_list(plains, print_plain);
-	
-	
 	
 	glutCreateMenu(menu);
 	
 	// Add menu items
-	glutAddMenuEntry("100 tacaka", 100);
-	glutAddMenuEntry("50 tacaka", 50);
-	glutAddMenuEntry("200 tacaka", 200);
 	glutAddMenuEntry("10 tacaka", 10);
+	glutAddMenuEntry("50 tacaka", 50);
+	glutAddMenuEntry("75 tacaka", 75);
+	glutAddMenuEntry("100 tacaka", 100);
+	glutAddMenuEntry("150 tacaka", 150);
+	glutAddMenuEntry("200 tacaka", 200);
 	
 	// Associate a mouse button with menu
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
-	
-	
-	
 	
      /* Ulazi se u glavnu petlju. */
     glutMainLoop();
@@ -137,28 +145,19 @@ int main(int argc, char **argv)
 }
 void on_display()
 {
-// 	printf("on_display");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	
-	glPushMatrix();
-		glLoadIdentity (); 
-		// Set the camera
- 		//gluLookAt(0.0f, 0.0f, 0.0f, -xlx, /*-yly*/0, xlz/* + ylz*/, 0.0f, 1.0f,  0.0f);
-		
-		gluLookAt (0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 1.0, 0.0);
-		glScalef (.5, .5, .5);      /* modeling transformation */ 
 
+	glPushMatrix();
+		glLoadIdentity(); 
+		gluLookAt (0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 1.0, 0.0);
+		glScalef (.5, .5, .5);      /* modeling transformation */
 		glRotatef(x_parameter +angleY+deltaAngleY,1,0,0);
 		glRotatef(y_parameter-angleX-deltaAngleX,0,1,0);
 		glRotatef(z_parameter,0,0,1);	
 		draw_convex_hull();
-	
-		
 	glPopMatrix();
 	
-	
-    /* Postavlja se nova slika u prozor. */
+    /* Rendering */
     glutSwapBuffers();
 }
 
@@ -166,64 +165,34 @@ static void on_keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
     case 27:
-        /* Zavrsava se program. */
+        /* ESC exit */
         exit(0);
         break;
 
     case 'g':
     case 'G':
-        /* Pokrece se simulacija. */
+        /* Start. */
         if (!animation_active) {
             glutTimerFunc(10, on_timer, 0);
             animation_active = 1;
         }
         break;
-
-    //case 's':
-    //case 'S':
-        /* Zaustavlja se simulacija. */
-        //animation_active = 0;
-        //break;
-	case 'a':
-	case 'A':
-		x_parameter -= 1;
-		break;
-	case 'd':
-	case 'D':
-		x_parameter += 1;
-		break;
-	case 'w':
-	case 'W':
-		z_parameter -= 1;
-		break;
-	case 's':
-	case 'S':
-		z_parameter += 1;
-		break;
-	case 'q':
-	case 'Q':
-		y_parameter += 1;
-		break;
-	case 'e':
-	case 'E':
-		y_parameter -= 1;
-		break;
 	}
 }
 
 static void on_timer(int value)
 {
-    /* Proverava se da li callback dolazi od odgovarajuceg tajmera. */
+    /* Callback from matching timer. */
     if (value != 0)
         return;
 
-    /* Azurira se vreme simulacije. */
+    /* Time of animation update */
     animation_parameter += 0.1;
 
-    /* Forsira se ponovno iscrtavanje prozora. */
+    /* Rendering display again */
     glutPostRedisplay();
 
-    /* Po potrebi se ponovo postavlja tajmer. */
+    /* Sets timer */
     if (animation_active)
         glutTimerFunc(10, on_timer, 0);
 }
@@ -233,29 +202,25 @@ static void on_reshape(int width, int height)
 	iwidth = width;
 	iheight = height;
 	
-    /* Postavlja se viewport. */
+    /* Viewport set. */
     glViewport(0, 0, width, height);
 
-    /* Postavljaju se parametri projekcije. */
+    /* Projection parameters */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 //     gluPerspective(60, (float) width / height, 0.000001,100);
-
 		glTranslatef(0,0,-4);
 	glMatrixMode (GL_MODELVIEW);
-	
-	
-	
 }
+
 void draw_convex_hull()
 {
-//  	printf("draw_convex_hull");
     Node *p = points;
     for (; p != NULL; p = p->next) {
 		Point *point = (Point *)p->elem;
         draw_point(*point);
 	}
-    
+	
     p = plains;
     int i = 0;
     for (; p != NULL; p = p->next, i++){
@@ -265,9 +230,9 @@ void draw_convex_hull()
     }
 }
 
-void mouseMove(int x, int y) { 	
-	
-	// this will only be true when the left button is down
+void mouseMove(int x, int y) 
+{ 	
+//	 this will only be true when the left button is down
 	if (xOrigin >= 0) {
 		
 		// update deltaAngle
@@ -276,29 +241,25 @@ void mouseMove(int x, int y) {
 		// update camera's direction
 		xlx = sin(angleX + deltaAngleX);
 		xlz = -cos(angleX + deltaAngleX);
-		
-		printf("   %lf %lf\n", xlx, xlz);
 	}
-
-	if (yOrigin >= 0) {
 	
-		// update deltaAngle
+	if (yOrigin >= 0) {
+		
+// 		update deltaAngle
 		deltaAngleY = (y - yOrigin) * 0.5f;
 		
-		// update camera's direction
+//	 	update camera's direction
 		yly = sin(angleY + deltaAngleY);
 		ylz = -cos(angleY + deltaAngleY);
-		
-		printf("%lf %lf\n", yly, ylz);
 	}
 }
 
-void mouseButton(int button, int state, int x, int y) {
-	
-	// only start motion if the left button is pressed
+void mouseButton(int button, int state, int x, int y) 
+{
+//	only start motion if the left button is pressed
 	if (button == GLUT_LEFT_BUTTON) {
 		
-		// when the button is released
+//		 when the button is released
 		if (state == GLUT_UP) {
 			angleX += deltaAngleX;
 			angleY += deltaAngleY;
@@ -306,8 +267,8 @@ void mouseButton(int button, int state, int x, int y) {
 			deltaAngleY = 0;
 			xOrigin = -1;
 			yOrigin = -1;
-		}
-		else  {// state = GLUT_DOWN
+		} else {
+// 		state = GLUT_DOWN
 			xOrigin = x;
 			yOrigin = y;
 		}
@@ -325,17 +286,13 @@ void menu(int item)
 		Point *point = random_point();
 		points = add_node(points, point);
 	}
-		
-			    
 	plains = convex_hull(points);
 						
-	
 	if (animation_active){
 		
 		glClearColor(0.64, 0.500, 0.87, 0.01);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 		
-
 	}
 	
 	if (!animation_active) {
@@ -347,9 +304,3 @@ void menu(int item)
 			
 	return;
 }
-
-
-
-
-
-

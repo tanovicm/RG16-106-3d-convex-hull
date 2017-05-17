@@ -10,6 +10,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+
+// calculates normal to the plain
 Vector normal(Plain plain)
 {
     // norm(CA x CB)
@@ -17,6 +19,7 @@ Vector normal(Plain plain)
                            sub_vector(*plain.b, *plain.c)));
 }
 
+// check if point belongs to specified plain
 int is_point_in_triangle(Plain plain, Point point)
 {
     Vector l1 = normalize(sub_vector(*plain.a, point));
@@ -28,26 +31,39 @@ int is_point_in_triangle(Plain plain, Point point)
     return abs(angle - 2*M_PI) < 0.0001;
 }
 
+// checking if projection of a point belogs to a plain
 int contains_projection(Plain plain, Point point)
 {
     Point projection = sub_vector(point, mul(normal(plain), distance(plain, point)));
     return is_point_in_triangle(plain, projection);
 }
 
+// calculates distance between point and plain
 double distance(Plain plain, Point point)
 {
     return dot(normal(plain), sub_vector(point,*plain.a));
 }
 
-Node *get_neighboors(Plain *plain)
-{	
-    Node *neighboors = NULL;
-    neighboors = add_node(neighboors,plain->ba);
-    neighboors = add_node(neighboors,plain->ac);
-    neighboors = add_node(neighboors,plain->cb);
+/*
+ * get_neighbors accepts plain and
+ * in regard to that plain calculates
+ * its neighbors 
+ */
 
-    return neighboors;
+Node *get_neighbors(Plain *plain)
+{	
+    Node *neighbors = NULL;
+    neighbors = add_node(neighbors,plain->ba);
+    neighbors = add_node(neighbors,plain->ac);
+    neighbors = add_node(neighbors,plain->cb);
+
+    return neighbors;
 }
+
+/*
+ * create plain with passed points a, b, c
+ * 
+ */
 Plain * make_plain(Point *a, Point *b, Point *c)
 {
     Plain * plain = malloc(sizeof(Plain));
@@ -69,11 +85,12 @@ Plain * make_plain(Point *a, Point *b, Point *c)
     return plain;
 }
 
+/* 
+ * returns array of points 
+ * which create plain
+ */ 
 Node *get_points(Plain *plain)
 {
-	
-	
-    /*NAPISI VRATI listu Tacaka [a,b,c]*/
     Node *points = NULL;
     points = add_node(points,plain->a);
     points = add_node(points,plain->b);
@@ -82,6 +99,12 @@ Node *get_points(Plain *plain)
 	if(points != NULL)
 		return points;
 }
+
+/*
+ * return farthest point in 
+ * regard to the passed plain
+ * 
+ */
 Point* find_farthest_point(Plain plain)
 {
     double max = 0;
@@ -100,16 +123,18 @@ Point* find_farthest_point(Plain plain)
     return pmax;
 }
 
+
+// draws plain
 void draw_plain(Plain plain)
 {
     glBegin(GL_TRIANGLES);
-		glColor3d(plain.a->x, plain.b->y, plain.c->z);
+// 		glColor3d(plain.a->x, plain.b->y, plain.c->z);
 		glVertex3d(plain.a->x, plain.a->y, plain.a->z);
         glVertex3d(plain.b->x, plain.b->y, plain.b->z);
         glVertex3d(plain.c->x, plain.c->y, plain.c->z);
     glEnd();
 }
-
+/* Debug
 void print_plain(Plain *plain)
 {
 	if(plain == NULL) {
@@ -126,4 +151,4 @@ void print_plain(Plain *plain)
 	printf(", points=");
 	print_list(plain->points, print_point);
 	printf("}");
-}
+} */ 

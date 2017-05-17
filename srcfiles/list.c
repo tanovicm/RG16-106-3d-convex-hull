@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-Node *last (Node *list)
+Node* last (Node *list)
 {
     while (list->next != NULL)
         list = list->next;
@@ -11,39 +11,34 @@ Node *last (Node *list)
     return list;
 }
 
-Node * add_node(Node *list, void * elem) 
+Node* add_node(Node *list, void * elem) 
 {
-    // alociranje memorije za novi nod
     Node *new_node = malloc(sizeof(Node));
     if (new_node == NULL){
-        printf("Malloc error");
+//         printf("Malloc error");
         exit(EXIT_FAILURE);
     }
-    // popunjavanje novog noda
-    // MALO SAM HAKERISALA SADA
+   
     if (elem == NULL)
 		return list;
     new_node->elem = elem;
     new_node->next = NULL;
-   
     
     if (list == NULL) {
         list = new_node;
         new_node->prev = NULL;
     } else {
         new_node->prev = last(list);
-	new_node->prev->next = new_node;
+		new_node->prev->next = new_node;
     }
-    
     return list;
 }
-// brisem node iz liste
-Node * delete_node(Node *list, Node *node)
-{
+
+Node* delete_node(Node *list, Node *node)
+{	
     Node *tmp = list;
     while(tmp != NULL){
         if (tmp == node) {
-            // prevezivanje liste
             tmp->prev->next = tmp->next;
             tmp->next->prev = tmp->prev;
             
@@ -57,11 +52,10 @@ Node * delete_node(Node *list, Node *node)
         }
         tmp = tmp->next;
     }
-    
     return list;
 }
 
-Node * append_list(Node *initial, Node *append){
+Node* append_list(Node *initial, Node *append){
 
     if (initial == NULL){
         return append;
@@ -76,6 +70,7 @@ Node * append_list(Node *initial, Node *append){
     return initial;
 }
 
+/* DEBUGING 
 void print_list(Node *list, void (*print_elem)(void*))
 {
 
@@ -87,4 +82,4 @@ void print_list(Node *list, void (*print_elem)(void*))
 		}
 	}
 	printf("]");
-}
+}  */
