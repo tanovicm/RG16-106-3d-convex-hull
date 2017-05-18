@@ -10,8 +10,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-
-// calculates normal to the plain
 Vector normal(Plain plain)
 {
     // norm(CA x CB)
@@ -19,7 +17,6 @@ Vector normal(Plain plain)
                            sub_vector(*plain.b, *plain.c)));
 }
 
-// check if point belongs to specified plain
 int is_point_in_triangle(Plain plain, Point point)
 {
     Vector l1 = normalize(sub_vector(*plain.a, point));
@@ -31,24 +28,16 @@ int is_point_in_triangle(Plain plain, Point point)
     return abs(angle - 2*M_PI) < 0.0001;
 }
 
-// checking if projection of a point belogs to a plain
 int contains_projection(Plain plain, Point point)
 {
     Point projection = sub_vector(point, mul(normal(plain), distance(plain, point)));
     return is_point_in_triangle(plain, projection);
 }
 
-// calculates distance between point and plain
 double distance(Plain plain, Point point)
 {
     return dot(normal(plain), sub_vector(point,*plain.a));
 }
-
-/*
- * get_neighbors accepts plain and
- * in regard to that plain calculates
- * its neighbors 
- */
 
 Node *get_neighbors(Plain *plain)
 {	
@@ -60,10 +49,6 @@ Node *get_neighbors(Plain *plain)
     return neighbors;
 }
 
-/*
- * create plain with passed points a, b, c
- * 
- */
 Plain * make_plain(Point *a, Point *b, Point *c)
 {
     Plain * plain = malloc(sizeof(Plain));
@@ -85,10 +70,6 @@ Plain * make_plain(Point *a, Point *b, Point *c)
     return plain;
 }
 
-/* 
- * returns array of points 
- * which create plain
- */ 
 Node *get_points(Plain *plain)
 {
     Node *points = NULL;
@@ -100,11 +81,6 @@ Node *get_points(Plain *plain)
 		return points;
 }
 
-/*
- * return farthest point in 
- * regard to the passed plain
- * 
- */
 Point* find_farthest_point(Plain plain)
 {
     double max = 0;
@@ -124,7 +100,6 @@ Point* find_farthest_point(Plain plain)
 }
 
 
-// draws plain
 void draw_plain(Plain plain)
 {
     glBegin(GL_TRIANGLES);
@@ -134,6 +109,7 @@ void draw_plain(Plain plain)
         glVertex3d(plain.c->x, plain.c->y, plain.c->z);
     glEnd();
 }
+
 /* Debug
 void print_plain(Plain *plain)
 {

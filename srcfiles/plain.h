@@ -30,10 +30,42 @@ typedef struct _plain {
     Node *points;
 } Plain;
 
-Plain * make_plain(Point *a, Point *b, Point *c);
-Node *get_points(Plain *plain);
-Node *get_neighbors(Plain *plain);
+/**
+ * @brief Makes plain from given points.
+ *
+ * @param a
+ * First point of a plain. 
+ * 
+ * @param b
+ * Second point of a plain.
+ * 
+ * @param c
+ * Third point of a plain.
+ * 
+ * @return Plain
+ */
+Plain* make_plain(Point *a, Point *b, Point *c);
 
+/**
+ * @brief Geting list of points.
+ * 
+ * @param plain
+ * Plain from which we get list of points.
+ *
+ * @return List of points.
+ */
+Node* get_points(Plain *plain);
+
+/**
+ * @brief Gets neighbors of a plain.
+ * 
+ * @param plain 
+ * Plain from which we get neighbors.
+ * 
+ * @return 
+ * List of plains which are neighbors.
+ */
+Node* get_neighbors(Plain *plain);
 
 /**
  * @brief Returns distance between plain and point
@@ -53,21 +85,21 @@ double distance(Plain plain, Point point);
  * @brief Returns true if the plain contains projection of the point.
  * 
  * @param plain 
- * Ravan u odnosu na koju racunamo pripadnost tacke
+ * Plain in respect to which we calculate if given point belongs to plain
  * @param point
- * Tacka za koju racunamo da li prirapada ravni.
+ * Point for which we calculate if belongs to plain
  * 
- * @return pripadnost
+ * @return 	One if point belongs to plain, zero otherwise
  */
 int contains_projection(Plain plain, Point point);
 
 /**
- * @brief Trazi najdalju tacku u odnosu na trougao.
+ * @brief Looking for the farthes point relative to plain.
  * 
  * @param plain 
- * Ravan u odnosu na koju trazi najdalju tacku
+ * Plain in respect to which we look for point.
  * 
- * @return najdalja tacka
+ * @return The farthest point.
  */
 Point* find_farthest_point(Plain plain);
 
@@ -79,6 +111,6 @@ Point* find_farthest_point(Plain plain);
  */
 void draw_plain(Plain plain);
 
-void print_plain(Plain *plain);
+// void print_plain(Plain *plain);
 
 #endif // __PLAIN_H_

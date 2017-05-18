@@ -44,6 +44,7 @@ void draw_point(Point point);
 
 /**
  * @brief Prints point for debug.
+ * 
  * @param point
  * Prints given point
  
@@ -55,6 +56,7 @@ void draw_point(Point point);
  * 
  * @param point 
  * Relative to which one we calculates distance
+ * 
  * @param lineA lineB
  * Line bound relative to which calculation is done
  * 

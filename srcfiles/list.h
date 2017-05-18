@@ -23,8 +23,8 @@ typedef struct _node {
  * @param list
  * List which is processed
  */
-
 Node* last (Node *list);
+
 /** 
  * @brief Adds new node to the list
  * 
@@ -34,7 +34,6 @@ Node* last (Node *list);
  * @param elem
  * Element which is added to the list
  */
-
 Node* add_node(Node *list, void * elem);
 
 /**
@@ -45,7 +44,6 @@ Node* add_node(Node *list, void * elem);
  * @param elem
  * Element which should be deleted
  */
-
 Node* delete_node(Node *list, Node *node);
 
 /** 
@@ -56,7 +54,6 @@ Node* delete_node(Node *list, Node *node);
  * @param append
  * Element of a list which is about to be added 
  */
-
 Node* append_list(Node *initial, Node *append);
 
 /**
