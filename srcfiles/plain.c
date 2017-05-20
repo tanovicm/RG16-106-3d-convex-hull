@@ -102,8 +102,32 @@ Point* find_farthest_point(Plain plain)
 
 void draw_plain(Plain plain)
 {
-    glBegin(GL_TRIANGLES);
+	/* Pozicija svetla (u pitanju je direkcionalno svetlo). */
+	GLfloat light_position[] = {1 , 1, 1, 0 };
+	
+	/* Nulti koeficijenti refleksije materijala. */
+	GLfloat no_material[] = { plain.a->x, plain.b->y, plain.c->z, 1 };
+	
+	/* Koeficijenti ambijentalne refleksije materijala. */
+	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1 };
+	
+	/* Koeficijenti difuzne refleksije materijala. */
+	GLfloat material_diffuse[] = { 0.2, 0.5, 0.8, 1 };
+	
+	/* Koeficijenti spekularne refleksije materijala. */
+	GLfloat material_specular[] = { 0.1, 0.1, 1, 1 };
+	
+	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. */
+	GLfloat low_shininess[] = { 5 };
+	
+	
+	glBegin(GL_TRIANGLES);
 // 		glColor3d(plain.a->x, plain.b->y, plain.c->z);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+		glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);
+		glMaterialfv(GL_FRONT, GL_EMISSION, no_material);
 		glVertex3d(plain.a->x, plain.a->y, plain.a->z);
         glVertex3d(plain.b->x, plain.b->y, plain.b->z);
         glVertex3d(plain.c->x, plain.c->y, plain.c->z);

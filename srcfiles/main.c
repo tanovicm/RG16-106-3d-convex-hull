@@ -62,40 +62,22 @@ int yOrigin = -1;
 // Menu handling function declaration
 void menu(int);
 
-void init(void) 
-{
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	/* Ambient lights. */
-	GLfloat light_ambient[] = { 0, 0, 0, 1 };
-	
-	/* Diffuse lights. */
-	GLfloat light_diffuse[] = { 1, 1, 1, 1 };
-	
-	/* Specular lights */
-	GLfloat light_specular[] = { 1, 1, 1, 1 };
-	
-	/* Ambient lighting of a scene */
-	GLfloat model_ambient[] = { 0.4, 0.4, 0.4, 1 };
-	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
-	
-	GLfloat ambient_coeffs[] = { .3, .3, .3, 1 };
-	GLfloat specular_coeffs[] = { .5, .5, .5, 1 };
-	GLfloat shininess = 100;
-	
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient_coeffs);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular_coeffs);
-	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	
-}
 
 int main(int argc, char **argv)
 {
+	
+	/* Ambijentalna boja svetla. */
+	GLfloat light_ambient[] = { 0.43, 0.4, 0.7, 1 };
+	
+	/* Difuzna boja svetla. */
+	GLfloat light_diffuse[] = { 1, 1, 1, 1 };
+	
+	/* Spekularna boja svetla. */
+	GLfloat light_specular[] = { 1, 1, 1, 1 };
+	
+	/* Ambijentalno osvetljenje scene. */
+	GLfloat model_ambient[] = { 0.4, 0.4, 0.4, 1 };
+	
     /* GLUT init */
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
@@ -105,7 +87,6 @@ int main(int argc, char **argv)
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
 
-	init();
     /* Events processing */
 	glutKeyboardFunc(on_keyboard);
 //        glutReshapeFunc(on_reshape);
@@ -138,6 +119,16 @@ int main(int argc, char **argv)
 	// Associate a mouse button with menu
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 	
+	glEnable(GL_DEPTH_TEST);
+	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
+	
+	
      /* Ulazi se u glavnu petlju. */
     glutMainLoop();
 
@@ -145,6 +136,25 @@ int main(int argc, char **argv)
 }
 void on_display()
 {
+	
+	/* Pozicija svetla (u pitanju je direkcionalno svetlo). */
+	GLfloat light_position[] = {1 , 1, 1, 0 };
+	
+	/* Nulti koeficijenti refleksije materijala. */
+	GLfloat no_material[] = { random_number(), random_number(), random_number(), 1 };
+	
+	/* Koeficijenti ambijentalne refleksije materijala. */
+	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1 };
+	
+	/* Koeficijenti difuzne refleksije materijala. */
+	GLfloat material_diffuse[] = { 0.2, 0.5, 0.8, 1 };
+	
+	/* Koeficijenti spekularne refleksije materijala. */
+	GLfloat material_specular[] = { 0.1, 0.1, 1, 1 };
+	
+	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. */
+	GLfloat low_shininess[] = { 5 };
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix();
@@ -154,6 +164,11 @@ void on_display()
 		glRotatef(x_parameter +angleY+deltaAngleY,1,0,0);
 		glRotatef(y_parameter-angleX-deltaAngleX,0,1,0);
 		glRotatef(z_parameter,0,0,1);	
+		glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+		glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);
+		glMaterialfv(GL_FRONT, GL_EMISSION, no_material);
 		draw_convex_hull();
 	glPopMatrix();
 	
