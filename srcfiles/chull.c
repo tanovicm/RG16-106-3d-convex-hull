@@ -133,12 +133,13 @@ Node* initial_convex_hull(Node *points)
             pminz = point;
         }
     }
-    
-	Point *xyzpoints [] = {pminx,pmaxx,pminz,pmaxz,pminy,pmaxy};
+   
+   	Point *xyzpoints [] = {pminx,pmaxx,pminz,pmaxz,pminy,pmaxy};
 	
 	double max_dist = 0;
 	Point *a,*b, *c;
 	
+	/* Two farthest points from xyzpoints. */
 	int i,j;
 	for (i = 0; i < 6; i++) {
 		for(j = 0; j < 6; j++) {
@@ -154,6 +155,7 @@ Node* initial_convex_hull(Node *points)
 		}
 	}
 	
+	/* Finding point that is farthest from ab line. */
 	max_dist = 0;
 	for (Node *temp = points; temp != NULL; temp = temp->next) {
 		Point *point = temp->elem;

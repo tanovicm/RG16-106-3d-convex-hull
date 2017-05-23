@@ -10,6 +10,3 @@ $(PROGRAM): main.o list.o point.o chull.o vector.o plain.o
 
 clean:
 	-rm *.o $(PROGRAM)
-
-dist: clean
-	-tar -chvj -C .. -f ../$(PROGRAM).tar.bz2 $(PROGRAM)

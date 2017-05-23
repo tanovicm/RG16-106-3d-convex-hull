@@ -37,7 +37,7 @@ static void menu (int x);
 void on_display(void);
 void draw_convex_hull();
 
-float iwidth=300, iheight=300;
+float iwidth=1000, iheight=600;
 
 Node *points, *plains;
 
@@ -66,16 +66,9 @@ void menu(int);
 int main(int argc, char **argv)
 {
 	
-	/* Ambijentalna boja svetla. */
 	GLfloat light_ambient[] = { 0.43, 0.4, 0.7, 1 };
-	
-	/* Difuzna boja svetla. */
 	GLfloat light_diffuse[] = { 1, 1, 1, 1 };
-	
-	/* Spekularna boja svetla. */
 	GLfloat light_specular[] = { 1, 1, 1, 1 };
-	
-	/* Ambijentalno osvetljenje scene. */
 	GLfloat model_ambient[] = { 0.4, 0.4, 0.4, 1 };
 	
     /* GLUT init */
@@ -84,7 +77,7 @@ int main(int argc, char **argv)
 
     /* Window created. */
     glutInitWindowSize(iwidth, iheight);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(0, 0);
     glutCreateWindow(argv[0]);
 
     /* Events processing */
@@ -137,22 +130,12 @@ int main(int argc, char **argv)
 void on_display()
 {
 	
-	/* Pozicija svetla (u pitanju je direkcionalno svetlo). */
-	GLfloat light_position[] = {1 , 1, 1, 0 };
-	
-	/* Nulti koeficijenti refleksije materijala. */
-	GLfloat no_material[] = { random_number(), random_number(), random_number(), 1 };
-	
-	/* Koeficijenti ambijentalne refleksije materijala. */
 	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1 };
 	
-	/* Koeficijenti difuzne refleksije materijala. */
-	GLfloat material_diffuse[] = { 0.2, 0.5, 0.8, 1 };
+	GLfloat material_diffuse[] = { 0.4, 0.4, 0.4, 1 };
 	
-	/* Koeficijenti spekularne refleksije materijala. */
 	GLfloat material_specular[] = { 0.1, 0.1, 1, 1 };
 	
-	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. */
 	GLfloat low_shininess[] = { 5 };
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -168,7 +151,6 @@ void on_display()
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);
-		glMaterialfv(GL_FRONT, GL_EMISSION, no_material);
 		draw_convex_hull();
 	glPopMatrix();
 	
@@ -249,7 +231,6 @@ void mouseMove(int x, int y)
 { 	
 //	 this will only be true when the left button is down
 	if (xOrigin >= 0) {
-		
 		// update deltaAngle
 		deltaAngleX = (x - xOrigin) * 0.5f;
 		
@@ -259,7 +240,6 @@ void mouseMove(int x, int y)
 	}
 	
 	if (yOrigin >= 0) {
-		
 // 		update deltaAngle
 		deltaAngleY = (y - yOrigin) * 0.5f;
 		

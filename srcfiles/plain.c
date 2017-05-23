@@ -52,8 +52,7 @@ Node *get_neighbors(Plain *plain)
 Plain * make_plain(Point *a, Point *b, Point *c)
 {
     Plain * plain = malloc(sizeof(Plain));
-    if (plain == NULL){
-//         fprintf(stderr,"Malloc error!");
+    if (plain == NULL) {
         exit(EXIT_FAILURE);
     }
 
@@ -102,27 +101,26 @@ Point* find_farthest_point(Plain plain)
 
 void draw_plain(Plain plain)
 {
-	/* Pozicija svetla (u pitanju je direkcionalno svetlo). */
 	GLfloat light_position[] = {1 , 1, 1, 0 };
 	
-	/* Nulti koeficijenti refleksije materijala. */
 	GLfloat no_material[] = { plain.a->x, plain.b->y, plain.c->z, 1 };
 	
-	/* Koeficijenti ambijentalne refleksije materijala. */
+	/* Ambient reflection. */
 	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1 };
 	
-	/* Koeficijenti difuzne refleksije materijala. */
+	/* Diffuse reflection. */
 	GLfloat material_diffuse[] = { 0.2, 0.5, 0.8, 1 };
 	
-	/* Koeficijenti spekularne refleksije materijala. */
+	/* Specular reflection */
 	GLfloat material_specular[] = { 0.1, 0.1, 1, 1 };
 	
-	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. */
+	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. 
+	   Coefficient of specular reflection in case of low value of coefficients.
+	 */
 	GLfloat low_shininess[] = { 5 };
 	
 	
 	glBegin(GL_TRIANGLES);
-// 		glColor3d(plain.a->x, plain.b->y, plain.c->z);
 		glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
