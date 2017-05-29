@@ -34,10 +34,10 @@ Point* random_point()
 
 void draw_point(Point point)
 {
-	glPointSize(3);
+	glPointSize(1.5);
     glBegin(GL_POINTS);
-		glColor3f(1, 0, 0);
-        glVertex3d(point.x, point.y, point.z);
+		glColor3f(0.42,0.42,0.42);
+		glVertex3d(point.x, point.y, point.z);
     glEnd();
 }
 

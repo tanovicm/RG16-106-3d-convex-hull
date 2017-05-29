@@ -96,24 +96,25 @@ int main(int argc, char **argv)
 	
 
     /* OpenGL init */
-    glClearColor(0.64, 0.500, 0.87, 0.01);
+    glClearColor(0,0, 0, 1);
     glEnable(GL_DEPTH_TEST);
 	
 	glutCreateMenu(menu);
 	
 	// Add menu items
-	glutAddMenuEntry("10 tacaka", 10);
-	glutAddMenuEntry("50 tacaka", 50);
-	glutAddMenuEntry("75 tacaka", 75);
-	glutAddMenuEntry("100 tacaka", 100);
-	glutAddMenuEntry("150 tacaka", 150);
-	glutAddMenuEntry("200 tacaka", 200);
+	glutAddMenuEntry("10 points", 10);
+	glutAddMenuEntry("25 points", 25);
+	glutAddMenuEntry("50 points", 50);
+	glutAddMenuEntry("75 points", 75);
+	glutAddMenuEntry("100 points", 100);
+	glutAddMenuEntry("150 points", 150);
+	glutAddMenuEntry("200 points", 200);
 	
 	// Associate a mouse button with menu
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 	
 	glEnable(GL_DEPTH_TEST);
-	
+	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -151,6 +152,7 @@ void on_display()
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);
+		glNormal3f(0.0, 0.0, 1.0);
 		draw_convex_hull();
 	glPopMatrix();
 	
@@ -285,7 +287,7 @@ void menu(int item)
 						
 	if (animation_active){
 		
-		glClearColor(0.64, 0.500, 0.87, 0.01);
+		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 		
 	}

@@ -101,9 +101,13 @@ Point* find_farthest_point(Plain plain)
 
 void draw_plain(Plain plain)
 {
-	GLfloat light_position[] = {1 , 1, 1, 0 };
+	/*excluding white*/
+	float newRange = 0.86;
+	float lowest = 0.14;
 	
-	GLfloat no_material[] = { plain.a->x, plain.b->y, plain.c->z, 1 };
+	GLfloat light_position[] = {0,0,3, 1};
+	
+	GLfloat no_material[] = {(plain.a->x*newRange)+lowest, (plain.b->y*newRange)+lowest, (plain.c->z*newRange)+lowest};
 	
 	/* Ambient reflection. */
 	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1 };
@@ -114,9 +118,7 @@ void draw_plain(Plain plain)
 	/* Specular reflection */
 	GLfloat material_specular[] = { 0.1, 0.1, 1, 1 };
 	
-	/* Koeficijent spekularne refleksije za slucaj male vrednosti koeficijenta. 
-	   Coefficient of specular reflection in case of low value of coefficients.
-	 */
+	/* Coefficient of specular reflection in case of low value of coefficients.	*/
 	GLfloat low_shininess[] = { 5 };
 	
 	
@@ -126,8 +128,31 @@ void draw_plain(Plain plain)
 		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);
 		glMaterialfv(GL_FRONT, GL_EMISSION, no_material);
+		glNormal3f(plain.a->y*plain.c->z -
+				 plain.a->z*plain.c->y,
+				 plain.a->z*plain.c->x -
+				 plain.a->x*plain.c->z,
+				 plain.a->x*plain.c->y -
+				 plain.a->y*plain.c->x
+		);
 		glVertex3d(plain.a->x, plain.a->y, plain.a->z);
+		
+		glNormal3f(plain.b->y*plain.a->z -
+				 plain.b->z*plain.a->y,
+				 plain.b->z*plain.a->x -
+				 plain.b->x*plain.a->z,
+				 plain.b->x*plain.a->y -
+				 plain.b->y*plain.a->x
+		);
+		
         glVertex3d(plain.b->x, plain.b->y, plain.b->z);
+		glNormal3f(plain.c->y*plain.b->z - 
+				   plain.c->z*plain.b->y, 
+				   plain.c->z*plain.b->x -
+				   plain.c->x*plain.b->z,
+				   plain.c->x*plain.b->y -
+				   plain.c->y*plain.b->x
+		);
         glVertex3d(plain.c->x, plain.c->y, plain.c->z);
     glEnd();
 }
