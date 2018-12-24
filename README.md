@@ -1,6 +1,7 @@
 # 3D Convex hull
 
 3D Convex hull implementation using C and OpenGL library.
+Random points generated using user’s selection, followed by algorithm joining them. 
 
 ## How to build
 ```
