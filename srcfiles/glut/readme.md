@@ -9,15 +9,15 @@ But. Please do not install it "globally" on your machine. You might use it in di
 
 Ditto. To save you a lot of trouble and instead of thinking GLUT is "trouble" please do use Visual Studio project features to include and link GLUT locally to the project.
 
-Always start from here: https://user.xmission.com/~nate/glut.html
+To know more, always start from here: https://user.xmission.com/~nate/glut.html
 
-Remember that is code from 2001 and x64 was not that prevailing. Thus; **that is 32 bit stuff only** in [glut-3.7.6-bin.zip](https://user.xmission.com/~nate/glut/glut-3.7.6-bin.zip) (117 KB)
+Remember that is code from 2001 and x64 was not that prevailing in that time. Thus; **that is 32 bit stuff only** in [glut-3.7.6-bin.zip](https://user.xmission.com/~nate/glut/glut-3.7.6-bin.zip) (117 KB)
 
 It is certainly possible to do your own Visual Studio x64 build using [glut-3.7.6-src.zip](https://user.xmission.com/~nate/glut/glut-3.7.6-src.zip) (4.76 MB). 
 
 ## By default GLUT is x86 only
 
-The easiest way for your Visual Studio builds to finish successfully is to copy from (the `glut` folder in here) `glut32.lib` and `glut32.dll` to the root folder of  the solution. Just as we have done in here. 
+Visual Studio build in here is to copy manually from (the `glut` folder in here) `glut32.lib` and to make a Visual Studio post-build event to copy `got\glut32.dll` to the output folder of the solution build. Just as we have done in here. 
 
 x64 targets are removed from this solution.
 
