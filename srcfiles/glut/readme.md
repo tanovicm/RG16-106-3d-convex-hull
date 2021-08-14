@@ -1,6 +1,8 @@
 
 # GLUT and WIN10
 
+This folder contains GLUT for WIN32
+
 GLUT is OK but (very) old. It works on WIN10 same as ever before and is quite OK. 
 
 But. Please do not install it "globally" on your machine. You might use it in different projects on that same machine but ever so slightly tweaked not by you but whoever you are using the code from. Thus you might use unknowingly slightly different glut version per project etc.
